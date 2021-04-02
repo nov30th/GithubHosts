@@ -1,5 +1,5 @@
 # GithubHosts
-Updates the host to avoid unknown issue with Github Server
+Updates the system hosts to avoid unknown issue with Github Server
 
 ## Screenshot
 ![Windows Console Window](images/console_screen.png)

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,17 +19,23 @@ async Task<string> GetRemoteContent()
 }
 
 const string title = "Github Hosts Modifier by Vincent Qiu.";
-var systemHosts = $@"{Environment.SystemDirectory}\drivers\etc\hosts";
+var systemHosts = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+    ? $@"{Environment.SystemDirectory}\drivers\etc\hosts"
+    : "/etc/hosts";
+
 var splitLine = string.Join(string.Empty, Enumerable.Repeat("=", title.Length));
 Console.WriteLine(title);
 Console.WriteLine("Hosts source credits to 521xueweihan.");
-Console.WriteLine("For Windows only.");
+Console.WriteLine("For Windows and Linux.");
 Console.WriteLine(splitLine);
 try
 {
-    if (System.IO.File.GetAttributes(systemHosts).ToString().IndexOf("ReadOnly", StringComparison.Ordinal) != -1)
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
     {
-        File.SetAttributes(systemHosts, FileAttributes.Normal);
+        if (System.IO.File.GetAttributes(systemHosts).ToString().IndexOf("ReadOnly", StringComparison.Ordinal) != -1)
+        {
+            File.SetAttributes(systemHosts, FileAttributes.Normal);
+        }
     }
 }
 catch (Exception ex)
@@ -91,7 +99,8 @@ catch (Exception ex)
     Console.WriteLine($@"Error! {ex.Message}");
     Console.WriteLine(
         "Make sure you have modified the hosts file permissions with NOT readonly and users can writing.");
-    Console.WriteLine("Or mouse right click and 'runs as Administrators'.");
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
+        Console.WriteLine("Or mouse right click and 'runs as Administrators'.");
     Console.WriteLine($@"Path: {systemHosts}");
     Console.ReadLine();
 }
